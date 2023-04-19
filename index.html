@@ -61,6 +61,14 @@
     let hvRoyalStraightCntP2 = 0
     let hvRoyalStraightCntP3 = 0
     let hvRoyalStraightCntP4 = 0
+    let hvDragonCntP1 = 0
+    let hvDragonCntP2 = 0
+    let hvDragonCntP3 = 0
+    let hvDragonCntP4 = 0
+    let hvRoyalDragonCntP1 = 0
+    let hvRoyalDragonCntP2 = 0
+    let hvRoyalDragonCntP3 = 0
+    let hvRoyalDragonCntP4 = 0
 
     let gotNothingP1 = 0
     let gotNothingP2 = 0
@@ -69,6 +77,8 @@
 
     let twoJQKnoADeeCnt = 0
 
+    let matchDragon = 0
+    let matchRoyalDragon = 0
     let matchRoyalStraight = 0
     let matchFourOfKind = 0
     let matchFullHouse = 0
@@ -225,6 +235,19 @@
       return straight
     }
 
+    function haveDragon(array) {
+      let royal = true
+      let tmp = sortCardsByNo(array)
+      let lastSuit = tmp[0].suit
+      
+      for (let i = 0; i < tmp.length; i++) {
+        if (tmp[i].cardNo != i + 1) return false
+        if (lastSuit != tmp[i].suit) royal = false
+      }
+
+      return (royal) ? 2 : 1
+    }
+
     function haveRoyalStraight(array) {
       let royalStraight = false
       let tmp = sortCardsBySuit(array)
@@ -344,6 +367,12 @@
       return tmp
     }
 
+    function sortCardsByNo(array) {
+      let tmp = [...array]
+      tmp.sort((a, b) => a.cardNo - b.cardNo)
+      return tmp
+    }
+
     function fisher_yates() {
       document.getElementById("p1condition").innerHTML = ""
       document.getElementById("p2condition").innerHTML = ""
@@ -395,8 +424,6 @@
         sortCardsByOrder(player3)
         sortCardsByOrder(player4)
 
-        sortCardsBySuit(player1)
-
         printPlayerCards(player1, "para1")
         printPlayerCards(player2, "para2")
         printPlayerCards(player3, "para3")
@@ -406,7 +433,9 @@
         let anyHvStraight = false
         let anyHvFullHouse = false
         let anyHvFourOfKind = false
-		let anyHvRoyalStraight = false
+        let anyHvRoyalStraight = false
+        let anyHvDragon = false
+        let anyHvRoyalDragon = false
 
         if (haveFlush(player1)) {
           hvFlushCntP1++
@@ -492,7 +521,7 @@
           document.getElementById("p4condition").innerHTML += " 有四條"
         }
 
-		if (haveRoyalStraight(player1)) {
+        if (haveRoyalStraight(player1)) {
           hvRoyalStraightCntP1++
           anyHvRoyalStraight = true
           document.getElementById("p1condition").innerHTML += " 有同花順"
@@ -511,6 +540,47 @@
           hvRoyalStraightCntP4++
           anyHvRoyalStraight = true
           document.getElementById("p4condition").innerHTML += " 有同花順"
+        }
+
+        const dragon_p1 = haveDragon(player1)
+        const dragon_p2 = haveDragon(player2)
+        const dragon_p3 = haveDragon(player3)
+        const dragon_p4 = haveDragon(player4)
+        if (dragon_p1 == 1) {
+          hvDragonCntP1++
+          anyHvDragon = true
+          document.getElementById("p1condition").innerHTML += " 雜龍"
+        } else if (dragon_p1 == 2) {
+          hvRoyalDragonCntP1++
+          anyHvRoyalDragon = true
+          document.getElementById("p1condition").innerHTML += " 一條龍"
+        }
+        if (dragon_p2 == 1) {
+          hvDragonCntP2++
+          anyHvDragon = true
+          document.getElementById("p2condition").innerHTML += " 雜龍"
+        } else if (dragon_p2 == 2) {
+          hvRoyalDragonCntP2++
+          anyHvRoyalDragon = true
+          document.getElementById("p2condition").innerHTML += " 一條龍"
+        }
+        if (dragon_p3 == 1) {
+          hvDragonCntP3++
+          anyHvDragon = true
+          document.getElementById("p3condition").innerHTML += " 雜龍"
+        } else if (dragon_p3 == 2) {
+          hvRoyalDragonCntP3++
+          anyHvRoyalDragon = true
+          document.getElementById("p3condition").innerHTML += " 一條龍"
+        }
+        if (dragon_p4 == 1) {
+          hvDragonCntP4++
+          anyHvDragon = true
+          document.getElementById("p4condition").innerHTML += " 雜龍"
+        } else if (dragon_p4 == 2) {
+          hvRoyalDragonCntP4++
+          anyHvRoyalDragon = true
+          document.getElementById("p4condition").innerHTML += " 一條龍"
         }
 
         let allHvNothing = true
@@ -535,7 +605,9 @@
         if (anyHvStraight) matchStraight++
         if (anyHvFullHouse) matchFullHouse++
         if (anyHvFourOfKind) matchFourOfKind++
-		if (anyHvRoyalStraight) matchRoyalStraight++
+        if (anyHvRoyalStraight) matchRoyalStraight++
+        if (anyHvDragon) matchDragon++
+        if (anyHvRoyalDragon) matchRoyalDragon++
 
         if(!anyHvFlush && !anyHvStraight && !anyHvFullHouse && !anyHvFourOfKind)
           matchNothing++
@@ -565,10 +637,20 @@
       document.getElementById("P3hvFourOfKind").innerHTML = hvFourOfKindCntP3 + echoPercent(hvFourOfKindCntP3, matchesCount)
       document.getElementById("P4hvFourOfKind").innerHTML = hvFourOfKindCntP4 + echoPercent(hvFourOfKindCntP4, matchesCount)
 
-	  document.getElementById("P1hvRoyalStraight").innerHTML = hvRoyalStraightCntP1 + echoPercent(hvRoyalStraightCntP1, matchesCount)
+      document.getElementById("P1hvRoyalStraight").innerHTML = hvRoyalStraightCntP1 + echoPercent(hvRoyalStraightCntP1, matchesCount)
       document.getElementById("P2hvRoyalStraight").innerHTML = hvRoyalStraightCntP2 + echoPercent(hvRoyalStraightCntP2, matchesCount)
       document.getElementById("P3hvRoyalStraight").innerHTML = hvRoyalStraightCntP3 + echoPercent(hvRoyalStraightCntP3, matchesCount)
       document.getElementById("P4hvRoyalStraight").innerHTML = hvRoyalStraightCntP4 + echoPercent(hvRoyalStraightCntP4, matchesCount)
+
+      document.getElementById("P1hvDragon").innerHTML = hvDragonCntP1 + echoPercent(hvDragonCntP1, matchesCount)
+      document.getElementById("P2hvDragon").innerHTML = hvDragonCntP2 + echoPercent(hvDragonCntP2, matchesCount)
+      document.getElementById("P3hvDragon").innerHTML = hvDragonCntP3 + echoPercent(hvDragonCntP3, matchesCount)
+      document.getElementById("P4hvDragon").innerHTML = hvDragonCntP4 + echoPercent(hvDragonCntP4, matchesCount)
+
+      document.getElementById("P1hvRoyalDragon").innerHTML = hvRoyalDragonCntP1 + echoPercent(hvRoyalDragonCntP1, matchesCount)
+      document.getElementById("P2hvRoyalDragon").innerHTML = hvRoyalDragonCntP2 + echoPercent(hvRoyalDragonCntP2, matchesCount)
+      document.getElementById("P3hvRoyalDragon").innerHTML = hvRoyalDragonCntP3 + echoPercent(hvRoyalDragonCntP3, matchesCount)
+      document.getElementById("P4hvRoyalDragon").innerHTML = hvRoyalDragonCntP4 + echoPercent(hvRoyalDragonCntP4, matchesCount)
 
       document.getElementById("P1gotNothing").innerHTML = gotNothingP1 + echoPercent(gotNothingP1, matchesCount)
       document.getElementById("P2gotNothing").innerHTML = gotNothingP2 + echoPercent(gotNothingP2, matchesCount)
@@ -579,7 +661,9 @@
       document.getElementById("MatchhvFlush").innerHTML = matchFlush + echoPercent(matchFlush, matchesCount)
       document.getElementById("MatchhvFullHouse").innerHTML = matchFullHouse + echoPercent(matchFullHouse, matchesCount)
       document.getElementById("MatchhvFourOfKind").innerHTML = matchFourOfKind + echoPercent(matchFourOfKind, matchesCount)
-	  document.getElementById("MatchhvRoyalStraight").innerHTML = matchRoyalStraight + echoPercent(matchRoyalStraight, matchesCount)
+      document.getElementById("MatchhvRoyalStraight").innerHTML = matchRoyalStraight + echoPercent(matchRoyalStraight, matchesCount)
+      document.getElementById("MatchhvDragon").innerHTML = matchDragon + echoPercent(matchDragon, matchesCount)
+      document.getElementById("MatchhvRoyalDragon").innerHTML = matchRoyalDragon + echoPercent(matchRoyalDragon, matchesCount)
       document.getElementById("MatchgotNothing").innerHTML = matchNothing + echoPercent(matchNothing, matchesCount)
     }
 
@@ -605,7 +689,7 @@
 
 
     function echoPercent(count, total) {
-        return ` (<span>${(count * 100/ total).toFixed(1)}%</span>)`
+        return ` (<span>${(count * 100/ total).toFixed(3)}%</span>)`
     }
 
   </script>
@@ -665,6 +749,22 @@
         <td id="P3hvRoyalStraight">0</td>
         <td id="P4hvRoyalStraight">0</td>
         <td id="MatchhvRoyalStraight">0</td>
+      </tr>
+      <tr>
+        <th>雜龍&nbsp;</th>
+        <td id="P1hvDragon">0</td>
+        <td id="P2hvDragon">0</td>
+        <td id="P3hvDragon">0</td>
+        <td id="P4hvDragon">0</td>
+        <td id="MatchhvDragon">0</td>
+      </tr>
+      <tr>
+        <th>一條龍&nbsp;</th>
+        <td id="P1hvRoyalDragon">0</td>
+        <td id="P2hvRoyalDragon">0</td>
+        <td id="P3hvRoyalDragon">0</td>
+        <td id="P4hvRoyalDragon">0</td>
+        <td id="MatchhvRoyalDragon">0</td>
       </tr>
       <tr>
         <th>乜春都冇</th>
